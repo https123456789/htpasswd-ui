@@ -1,0 +1,11 @@
+# An example docker compose config
+
+services:
+  htpasswd_ui:
+    build: .
+    ports:
+      - 5001:5001
+    volumes:
+      - ./example-file:/app/example-file
+    environment:
+      - FILE_LOCATION=/app/example-file
