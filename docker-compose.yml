@@ -9,3 +9,4 @@ services:
       - ./example-file:/app/example-file
     environment:
       - FILE_LOCATION=/app/example-file
+      - ROUTE_PREFIX=/test/

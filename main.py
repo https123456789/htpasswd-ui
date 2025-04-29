@@ -4,6 +4,7 @@ from fasthtml.common import (
     Th, Button, Form, Input, A, Article, Section
 )
 
+ROUTE_PREFIX = os.environ.get("ROUTE_PREFIX", "/")
 FILE_LOCATION = os.environ.get("FILE_LOCATION", "/.htpasswd")
 app = FastHTML(hdrs=(picolink))
 
@@ -42,20 +43,32 @@ def index_page(error=None):
     return (
         Title("Htpasswd UI"),
         main(
-            H1(A("Htpasswd UI", href="/"), style="margin-bottom: 2em"),
+            H1(A("Htpasswd UI", href=ROUTE_PREFIX), style="margin-bottom: 2em"),
             Section(
                 H2("Users"),
-                Div(hx_get="/users", hx_trigger="load", id="users_div"),
+                Div(
+                    hx_get=ROUTE_PREFIX + "users",
+                    hx_trigger="load",
+                    id="users_div"
+                ),
                 style="margin-bottom: 2em"
             ),
             Section(
                 H2("Add User"),
                 error,
                 Form(
-                    Input(type="text", name="username"),
-                    Input(type="password", name="password"),
+                    Input(
+                        type="text",
+                        name="username",
+                        placeholder="Username"
+                    ),
+                    Input(
+                        type="password",
+                        name="password",
+                        placeholder="Password"
+                    ),
                     Button("Submit"),
-                    action="/",
+                    action=ROUTE_PREFIX,
                     method="post"
                 ),
                 style="margin-bottom: 2em"
@@ -67,12 +80,12 @@ def index_page(error=None):
 # Routes
 
 
-@app.get("/")
+@app.get(ROUTE_PREFIX)
 def rt_root():
     return index_page()
 
 
-@app.get("/users")
+@app.get(ROUTE_PREFIX + "users")
 def rt_users():
     users = get_users()
 
@@ -86,7 +99,7 @@ def rt_users():
                 Td(username),
                 Td(Button(
                     "Delete",
-                    hx_post=f"/delete/{i}",
+                    hx_post=f"{ROUTE_PREFIX}delete/{i}",
                     hx_target="#users_div",
                     hx_swap="innerHTML"
                 ))
@@ -97,7 +110,7 @@ def rt_users():
     )
 
 
-@app.post("/delete/{index}")
+@app.post(ROUTE_PREFIX + "delete/{index}")
 def rt_delete(index: int):
     users = get_users()
 
@@ -108,14 +121,14 @@ def rt_delete(index: int):
     set_users(users)
 
     return Div(
-        hx_get="/users",
+        hx_get=ROUTE_PREFIX + "users",
         hx_trigger="load",
         hx_target="#users_div",
         hx_swap="innerHTML"
     )
 
 
-@app.post("/")
+@app.post(ROUTE_PREFIX)
 def rt_add_user(username: str, password: str):
     status = os.system(f"htpasswd -bB {FILE_LOCATION} {username} {password}")
 
