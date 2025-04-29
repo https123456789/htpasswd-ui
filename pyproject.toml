@@ -1,0 +1,11 @@
+[project]
+name = "htpasswd-ui"
+version = "0.1.0"
+description = "A simple web interface for managing a htpasswd file"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = ["Ben Landon"]
+license = "MIT"
+dependencies = [
+    "python-fasthtml>=0.12.14",
+]
